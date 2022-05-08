@@ -48,6 +48,12 @@ func PlotMany(data [][]float64, options ...Option) string {
 			maximum = max
 		}
 	}
+	if config.Min != nil {
+		minimum = *config.Min
+	}
+	if config.Max != nil {
+		maximum = *config.Max
+	}
 	interval := math.Abs(maximum - minimum)
 
 	if config.Height <= 0 {
@@ -146,8 +152,10 @@ func PlotMany(data [][]float64, options ...Option) string {
 
 		if !math.IsNaN(series[0]) {
 			y0 = int(round(series[0]*ratio) - min2)
-			plot[rows-y0][config.Offset-1].Text = "┼" // first value
-			plot[rows-y0][config.Offset-1].Color = config.AxisColor
+			if y0 >= 0 && y0 <= rows {
+				plot[rows-y0][config.Offset-1].Text = "┼" // first value
+				plot[rows-y0][config.Offset-1].Color = config.AxisColor
+			}
 		}
 
 		for x := 0; x < len(series)-1; x++ { // plot the line
@@ -176,27 +184,41 @@ func PlotMany(data [][]float64, options ...Option) string {
 			y1 = int(round(d1*ratio) - float64(intmin2))
 
 			if y0 == y1 {
-				plot[rows-y0][x+config.Offset].Text = "─"
+				if y0 >= 0 && y0 <= rows {
+					plot[rows-y0][x+config.Offset].Text = "─"
+				}
 			} else {
 				if y0 > y1 {
-					plot[rows-y1][x+config.Offset].Text = "╰"
-					plot[rows-y0][x+config.Offset].Text = "╮"
+					if y1 >= 0 && y1 <= rows {
+						plot[rows-y1][x+config.Offset].Text = "╰"
+					}
+					if y0 >= 0 && y0 <= rows {
+						plot[rows-y0][x+config.Offset].Text = "╮"
+					}
 				} else {
-					plot[rows-y1][x+config.Offset].Text = "╭"
-					plot[rows-y0][x+config.Offset].Text = "╯"
+					if y1 >= 0 && y1 <= rows {
+						plot[rows-y1][x+config.Offset].Text = "╭"
+					}
+					if y0 >= 0 && y0 <= rows {
+						plot[rows-y0][x+config.Offset].Text = "╯"
+					}
 				}
 
 				start := int(math.Min(float64(y0), float64(y1))) + 1
 				end := int(math.Max(float64(y0), float64(y1)))
 				for y := start; y < end; y++ {
-					plot[rows-y][x+config.Offset].Text = "│"
+					if y >= 0 && y <= rows {
+						plot[rows-y][x+config.Offset].Text = "│"
+					}
 				}
 			}
 
 			start := int(math.Min(float64(y0), float64(y1)))
 			end := int(math.Max(float64(y0), float64(y1)))
 			for y := start; y <= end; y++ {
-				plot[rows-y][x+config.Offset].Color = color
+				if y >= 0 && y <= rows {
+					plot[rows-y][x+config.Offset].Color = color
+				}
 			}
 		}
 	}

@@ -19,6 +19,7 @@ type config struct {
 	AxisColor     AnsiColor
 	LabelColor    AnsiColor
 	SeriesColors  []AnsiColor
+	Min, Max      *float64
 }
 
 // An optionFunc applies an option.
@@ -57,6 +58,18 @@ func Height(h int) Option {
 			c.Height = 0
 		}
 	})
+}
+
+// Min sets the graph's minimum value for the vertical axis. It will be ignored
+// if the series contains a lower value.
+func Min(min float64) Option {
+	return optionFunc(func(c *config) { c.Min = &min })
+}
+
+// Max sets the graph's maximum value for the vertical axis. It will be ignored
+// if the series contains a bigger value.
+func Max(max float64) Option {
+	return optionFunc(func(c *config) { c.Max = &max })
 }
 
 // Offset sets the graphs offset.
